@@ -1,4 +1,4 @@
-import { BaseDirectory, readBinaryFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, readFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
 import { alertError, alertNormal, alertStore, alertWait } from "../alert";
 import { LocalWriter, forageStorage, isTauri } from "../storage/globalApi";
 import { decodeRisuSave, encodeRisuSave } from "../storage/risuSave";
@@ -50,7 +50,7 @@ export async function SaveLocalBackup(){
             if(!key || !key.endsWith('.png')){
                 continue
             }
-            await writer.writeBackup(key, await readBinaryFile(asset.path))
+            await writer.writeBackup(key, await readFile(asset.path))
         }
     }
     else{

@@ -3,7 +3,7 @@ import type { Database, Message } from "./storage/database"
 import { DataBase } from "./storage/database"
 import { selectedCharID } from "./stores"
 import {open} from '@tauri-apps/plugin-dialog'
-import { readBinaryFile } from "@tauri-apps/plugin-fs"
+import { readFile } from "@tauri-apps/plugin-fs"
 import { basename } from "@tauri-apps/api/path"
 import { createBlankChar, getCharImage } from "./characters"
 import { appWindow } from 'webviewWindow';
@@ -74,7 +74,7 @@ export async function selectSingleFile(ext:string[]){
     } else if (selected === null) {
         return null
     } else {
-        return {name: await basename(selected),data:await readBinaryFile(selected)}
+        return {name: await basename(selected),data:await readFile(selected)}
     }
 }
 
@@ -98,13 +98,13 @@ export async function selectMultipleFile(ext:string[]){
     if (Array.isArray(selected)) {
         let arr:{name:string, data:Uint8Array}[] = []
         for(const file of selected){
-            arr.push({name: await basename(file),data:await readBinaryFile(file)})
+            arr.push({name: await basename(file),data:await readFile(file)})
         }
         return arr
     } else if (selected === null) {
         return null
     } else {
-        return [{name: await basename(selected),data:await readBinaryFile(selected)}]
+        return [{name: await basename(selected),data:await readFile(selected)}]
     }
 }
 

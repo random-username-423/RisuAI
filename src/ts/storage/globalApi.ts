@@ -1,4 +1,4 @@
-import { writeBinaryFile,BaseDirectory, readBinaryFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
+import { writeBinaryFile,BaseDirectory, readFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { v4 as uuidv4, v4 } from 'uuid';
@@ -207,9 +207,9 @@ export async function readImage(data:string) {
             if(appDataDirPath === ''){
                 appDataDirPath = await appDataDir();
             }
-            return await readBinaryFile(await join(appDataDirPath,data))
+            return await readFile(await join(appDataDirPath,data))
         }
-        return await readBinaryFile(data)
+        return await readFile(data)
     }
     else{
         return (await forageStorage.getItem(data) as Uint8Array)
@@ -248,7 +248,7 @@ export async function saveAsset(data:Uint8Array, customId:string = '', fileName:
 
 export async function loadAsset(id:string){
     if(isTauri){
-        return await readBinaryFile(id,{dir: BaseDirectory.AppData})
+        return await readFile(id,{dir: BaseDirectory.AppData})
     }
     else{
         return await forageStorage.getItem(id) as Uint8Array
@@ -399,14 +399,14 @@ export async function loadData() {
                 }
                 try {
                     setDatabase(
-                        decodeRisuSave(await readBinaryFile('database/database.bin',{dir: BaseDirectory.AppData}))
+                        decodeRisuSave(await readFile('database/database.bin',{dir: BaseDirectory.AppData}))
                     )
                 } catch (error) {
                     const backups = await getDbBackups()
                     let backupLoaded = false
                     for(const backup of backups){
                         try {
-                            const backupData = await readBinaryFile(`database/dbbackup-${backup}.bin`,{dir: BaseDirectory.AppData})
+                            const backupData = await readFile(`database/dbbackup-${backup}.bin`,{dir: BaseDirectory.AppData})
                             setDatabase(
                                 decodeRisuSave(backupData)
                             )

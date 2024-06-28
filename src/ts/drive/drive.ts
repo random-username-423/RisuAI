@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import { alertError, alertErrorWait, alertInput, alertNormal, alertSelect, alertStore } from "../alert";
 import { DataBase, setDatabase, type Database } from "../storage/database";
 import { forageStorage, getUnpargeables, isNodeServer, isTauri, openURL } from "../storage/globalApi";
-import { BaseDirectory, exists, readBinaryFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, exists, readFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
 import { language } from "../../lang";
 import { relaunch } from '@tauri-apps/plugin-process';
 import { isEqual } from "lodash";
@@ -157,7 +157,7 @@ export async function syncDrive() {
                         }
                         const formatedKey = formatKeys(key)
                         if(!fileNames.includes(formatedKey)){
-                            await createFileInFolder(ACCESS_TOKEN, formatedKey, await readBinaryFile(asset.path))
+                            await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile(asset.path))
                         }
                     }
                 }
@@ -235,7 +235,7 @@ async function backupDrive(ACCESS_TOKEN:string) {
             }
             const formatedKey = newFormatKeys(key)
             if(!fileNames.includes(formatedKey)){
-                await createFileInFolder(ACCESS_TOKEN, formatedKey, await readBinaryFile(asset.path))
+                await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile(asset.path))
             }
         }
     }

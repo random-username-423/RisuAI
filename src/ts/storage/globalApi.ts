@@ -1,6 +1,6 @@
 import { writeBinaryFile,BaseDirectory, readBinaryFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
-import { convertFileSrc, invoke } from "core"
+import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { v4 as uuidv4, v4 } from 'uuid';
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { get } from "svelte/store";

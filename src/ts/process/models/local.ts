@@ -1,4 +1,4 @@
-import { invoke } from "core";
+import { invoke } from "@tauri-apps/api/core";
 import { globalFetch } from "src/ts/storage/globalApi";
 import { sleep } from "src/ts/util";
 import * as path from "@tauri-apps/api/path";

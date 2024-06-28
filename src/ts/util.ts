@@ -2,11 +2,11 @@ import { get, writable, type Writable } from "svelte/store"
 import type { Database, Message } from "./storage/database"
 import { DataBase } from "./storage/database"
 import { selectedCharID } from "./stores"
-import {open} from '@tauri-apps/api/dialog'
-import { readBinaryFile } from "@tauri-apps/api/fs"
+import {open} from '@tauri-apps/plugin-dialog'
+import { readBinaryFile } from "@tauri-apps/plugin-fs"
 import { basename } from "@tauri-apps/api/path"
 import { createBlankChar, getCharImage } from "./characters"
-import { appWindow } from '@tauri-apps/api/window';
+import { appWindow } from 'webviewWindow';
 import { isTauri } from "./storage/globalApi"
 import { Marked } from "marked"
 

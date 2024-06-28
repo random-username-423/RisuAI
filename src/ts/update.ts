@@ -4,8 +4,8 @@ import { Capacitor } from "@capacitor/core";
 import {
     checkUpdate,
     installUpdate,
-} from '@tauri-apps/api/updater'
-import { relaunch } from '@tauri-apps/api/process'
+} from '@tauri-apps/plugin-updater'
+import { relaunch } from '@tauri-apps/plugin-process'
 
 export async function checkRisuUpdate(){
 

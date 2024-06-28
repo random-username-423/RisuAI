@@ -1,15 +1,15 @@
-import { writeBinaryFile,BaseDirectory, readBinaryFile, exists, createDir, readDir, removeFile } from "@tauri-apps/api/fs"
+import { writeBinaryFile,BaseDirectory, readBinaryFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
-import { convertFileSrc, invoke } from "@tauri-apps/api/tauri"
+import { convertFileSrc, invoke } from "core"
 import { v4 as uuidv4, v4 } from 'uuid';
 import { appDataDir, join } from "@tauri-apps/api/path";
 import { get } from "svelte/store";
-import {open} from '@tauri-apps/api/shell'
+import {open} from '@tauri-apps/plugin-shell'
 import { DataBase, loadedStore, setDatabase, type Database, defaultSdDataFunc } from "./database";
-import { appWindow } from "@tauri-apps/api/window";
+import { appWindow } from "webviewWindow";
 import { checkRisuUpdate } from "../update";
 import { botMakerMode, selectedCharID } from "../stores";
-import { Body, ResponseType, fetch as TauriFetch } from "@tauri-apps/api/http";
+import { Body, ResponseType, fetch as TauriFetch } from "@tauri-apps/plugin-http";
 import { loadPlugins } from "../plugins/plugins";
 import { alertConfirm, alertError, alertNormal, alertNormalWait } from "../alert";
 import { checkDriverInit, syncDrive } from "../drive/drive";
@@ -24,7 +24,7 @@ import { updateColorScheme, updateTextTheme } from "../gui/colorscheme";
 import { saveDbKei } from "../kei/backup";
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import * as CapFS from '@capacitor/filesystem'
-import { save } from "@tauri-apps/api/dialog";
+import { save } from "@tauri-apps/plugin-dialog";
 import type { RisuModule } from "../process/modules";
 import { listen } from '@tauri-apps/api/event'
 import { registerPlugin } from '@capacitor/core';

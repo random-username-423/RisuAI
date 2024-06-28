@@ -1,23 +1,22 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
-use serde_json::Value;
-use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use base64::{engine::general_purpose, Engine as _};
-use tauri::Manager;
-use std::io::Write;
-use std::{time::Duration, path::Path};
+use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde_json::json;
+use serde_json::Value;
 use std::collections::HashMap;
+use std::io::Write;
+use std::{path::Path, time::Duration};
+use tauri::Manager;
 
 #[tauri::command]
-async fn native_request(url: String, body: String, header: String, method:String) -> String {
+async fn native_request(url: String, body: String, header: String, method: String) -> String {
     let headers_json: Value = match serde_json::from_str(&header) {
         Ok(h) => h,
         Err(e) => return format!(r#"{{"success":false,"body":"{}"}}"#, e.to_string()),
@@ -42,24 +41,23 @@ async fn native_request(url: String, body: String, header: String, method:String
     }
 
     let client = reqwest::Client::new();
-    let response:Result<reqwest::Response, reqwest::Error>;
+    let response: Result<reqwest::Response, reqwest::Error>;
 
     if method == "POST" {
         response = client
-        .post(&url)
-        .headers(headers)
-        .timeout(Duration::from_secs(120))
-        .body(body)
-        .send()
-        .await;
-    }
-    else{
+            .post(&url)
+            .headers(headers)
+            .timeout(Duration::from_secs(120))
+            .body(body)
+            .send()
+            .await;
+    } else {
         response = client
-        .get(&url)
-        .headers(headers)
-        .timeout(Duration::from_secs(120))
-        .send()
-        .await;
+            .get(&url)
+            .headers(headers)
+            .timeout(Duration::from_secs(120))
+            .send()
+            .await;
     }
 
     match response {
@@ -72,14 +70,17 @@ async fn native_request(url: String, body: String, header: String, method:String
             };
             let encoded = general_purpose::STANDARD.encode(&bytes);
 
-            format!(r#"{{"success":true,"body":"{}","headers":{}}}"#, encoded, header_json)
+            format!(
+                r#"{{"success":true,"body":"{}","headers":{}}}"#,
+                encoded, header_json
+            )
         }
         Err(e) => format!(r#"{{"success":false,"body":"{}"}}"#, e.to_string()),
     }
 }
 
 #[tauri::command]
-fn check_auth(fpath: String, auth: String) -> bool{
+fn check_auth(fpath: String, auth: String) -> bool {
     //check file exists
     let path = Path::new(&fpath);
     if !path.exists() {
@@ -101,8 +102,6 @@ fn check_auth(fpath: String, auth: String) -> bool{
         println!("File {} is too large", path.display());
         return false;
     }
-    
-
 
     // read file, return false when error
     let got_auth = std::fs::read_to_string(&path);
@@ -111,8 +110,7 @@ fn check_auth(fpath: String, auth: String) -> bool{
     if got_auth.is_err() {
         println!("Error reading file {}", path.display());
         return false;
-    }
-    else{
+    } else {
         // check auth
         if got_auth.unwrap() != auth {
             println!("Auth does not match");
@@ -121,11 +119,10 @@ fn check_auth(fpath: String, auth: String) -> bool{
         println!("Auth matches");
         return true;
     }
-    
 }
 
 #[tauri::command]
-async fn install_python(path:String) -> bool{
+async fn install_python(path: String) -> bool {
     //get python embeddable depending on os
     let os = std::env::consts::OS;
     let url;
@@ -134,12 +131,11 @@ async fn install_python(path:String) -> bool{
         std::fs::create_dir_all(&py_path).unwrap();
     }
     let zip_path: std::path::PathBuf = Path::new(&path).join("python.zip");
-    
+
     println!("Path: {}", path);
     if os == "windows" {
         url = "https://www.python.org/ftp/python/3.11.7/python-3.11.7-embed-amd64.zip".to_string()
-    }
-    else{
+    } else {
         println!("OS not supported");
         return false;
     }
@@ -160,16 +156,13 @@ async fn install_python(path:String) -> bool{
     if os == "windows" {
         let mut zipf = ZipArchive::new(std::fs::File::open(&zip_path).unwrap()).unwrap();
         zipf.extract(&py_path).unwrap();
-    }
-    else if os == "linux" {
+    } else if os == "linux" {
         let mut tarf = tar::Archive::new(std::fs::File::open(&zip_path).unwrap());
         tarf.unpack(&py_path).unwrap();
-    }
-    else if os == "macos" {
+    } else if os == "macos" {
         let mut zipf = zip::ZipArchive::new(std::fs::File::open(&zip_path).unwrap()).unwrap();
         zipf.extract(&py_path).unwrap();
-    }
-    else{
+    } else {
         println!("OS not supported");
         return false;
     }
@@ -183,20 +176,20 @@ async fn install_python(path:String) -> bool{
         Ok(o) => {
             let res = String::from_utf8(o.stdout).unwrap();
             if !res.starts_with("Python ") {
-                return false
+                return false;
             }
             println!("{}", res);
-            return true
-        },
+            return true;
+        }
         Err(e) => {
             println!("{}", e);
-            return false
+            return false;
         }
     }
 }
 
 #[tauri::command]
-async fn install_pip(path:String) -> bool{
+async fn install_pip(path: String) -> bool {
     let py_path = Path::new(&path).join("python");
     let py_exec_path = py_path.join("python.exe");
     let get_pip_url = "https://bootstrap.pypa.io/get-pip.py";
@@ -216,34 +209,34 @@ async fn install_pip(path:String) -> bool{
             let res = String::from_utf8(o.stdout).unwrap();
             println!("{}", res);
             if !res.starts_with("Python ") {
-                return false
+                return false;
             }
-            return true
-        },
+            return true;
+        }
         Err(e) => {
             println!("{}", e);
-            return false
+            return false;
         }
-    }    
+    }
 }
 
 use std::process::Command;
 
 #[tauri::command]
-fn check_requirements_local() -> String{
+fn check_requirements_local() -> String {
     let mut py = Command::new("python");
     let output = py.arg("--version").output();
     match output {
         Ok(o) => {
             let res = String::from_utf8(o.stdout).unwrap();
             if !res.starts_with("Python ") {
-                return "Python is not installed".to_string()
+                return "Python is not installed".to_string();
             }
             println!("{}", res);
-        },
+        }
         Err(e) => {
             println!("{}", e);
-            return "Python is not installed, or not loadable".to_string()
+            return "Python is not installed, or not loadable".to_string();
         }
     }
 
@@ -253,21 +246,21 @@ fn check_requirements_local() -> String{
         Ok(o) => {
             let res = String::from_utf8(o.stdout).unwrap();
             if !res.starts_with("git version ") {
-                return "Git is not installed".to_string()
+                return "Git is not installed".to_string();
             }
             println!("{}", res);
-        },
+        }
         Err(e) => {
             println!("{}", e);
-            return "Git is not installed, or not loadable".to_string()
+            return "Git is not installed, or not loadable".to_string();
         }
     }
 
-    return "success".to_string()
+    return "success".to_string();
 }
 
 #[tauri::command]
-fn post_py_install(path:String){
+fn post_py_install(path: String) {
     let py_path = Path::new(&path).join("python");
     let py_pth_path = py_path.join("python311._pth");
     //uncomment python libs
@@ -280,31 +273,38 @@ fn post_py_install(path:String){
     std::fs::write(&completed_path, "python311").unwrap();
 }
 
-
 #[tauri::command]
-fn install_py_dependencies(path:String, dependency:String) -> Result<(), String>{
+fn install_py_dependencies(path: String, dependency: String) -> Result<(), String> {
     println!("installing {}", dependency);
     let py_path = Path::new(&path).join("python");
     let py_exec_path = py_path.join("python.exe");
     let mut py = Command::new(py_exec_path);
-    let output = py.arg("-m").arg("pip").arg("install").arg(dependency).output();
+    let output = py
+        .arg("-m")
+        .arg("pip")
+        .arg("install")
+        .arg(dependency)
+        .output();
     match output {
         Ok(o) => {
             let res = String::from_utf8(o.stdout).unwrap();
             println!("{}", res);
-            return Ok(())
-        },
+            return Ok(());
+        }
         Err(e) => {
             println!("{}", e);
-            return Err(e.to_string())
+            return Err(e.to_string());
         }
     }
 }
 
 #[tauri::command]
-fn run_py_server(handle: tauri::AppHandle, py_path:String){
+fn run_py_server(handle: tauri::AppHandle, py_path: String) {
     let py_exec_path = Path::new(&py_path).join("python").join("python.exe");
-    let server_path = handle.path_resolver().resolve_resource("src-python/run.py").expect("failed to resolve resource");
+    let server_path = handle
+        .path_resolver()
+        .resolve_resource("src-python/run.py")
+        .expect("failed to resolve resource");
 
     let mut py_server = Command::new(&py_exec_path);
     //set working directory to server path
@@ -312,14 +312,23 @@ fn run_py_server(handle: tauri::AppHandle, py_path:String){
 
     println!("server_path: {}", server_path.display());
     println!("py_exec_path: {}", py_exec_path.display());
-    let mut _child = py_server.arg("-m").arg("uvicorn").arg("--port").arg("10026").arg("main:app").spawn().expect("failed to execute process");
+    let mut _child = py_server
+        .arg("-m")
+        .arg("uvicorn")
+        .arg("--port")
+        .arg("10026")
+        .arg("main:app")
+        .spawn()
+        .expect("failed to execute process");
     println!("server started");
-    return
+    return;
 }
 
 #[tauri::command]
-fn run_server_local(){
-    let app_base_path = tauri::api::path::data_dir().unwrap().join("co.aiclient.risu");
+fn run_server_local() {
+    let app_base_path = tauri::api::path::data_dir()
+        .unwrap()
+        .join("co.aiclient.risu");
 
     //check app base path exists
     if !app_base_path.exists() {
@@ -341,10 +350,10 @@ fn run_server_local(){
             Ok(o) => {
                 let res = String::from_utf8(o.stdout).unwrap();
                 println!("output: {}", res);
-            },
+            }
             Err(e) => {
                 println!("{}", e);
-                return
+                return;
             }
         }
 
@@ -357,35 +366,42 @@ fn run_server_local(){
         std::fs::rename(git_cloned_path, server_path.clone()).unwrap();
     }
 
-
     //check os is windows
     if cfg!(target_os = "windows") {
         println!("windows runner");
         let command_location = &server_path.clone().join("run.cmd");
         let mut server = Command::new(command_location);
-        let mut _child = server.current_dir(server_path).spawn().expect("failed to execute process");
-    }
-    else{
+        let mut _child = server
+            .current_dir(server_path)
+            .spawn()
+            .expect("failed to execute process");
+    } else {
         println!("linux/mac runner");
         let command_location = &server_path.clone().join("run.sh");
         let mut server = Command::new(command_location);
-        let mut _child = server.current_dir(server_path).spawn().expect("failed to execute process");
+        let mut _child = server
+            .current_dir(server_path)
+            .spawn()
+            .expect("failed to execute process");
     }
-    return
-
+    return;
 }
 
-
 #[tauri::command]
-async fn streamed_fetch(id:String, url:String, headers: String, body: String, handle: tauri::AppHandle) -> String {
-
+async fn streamed_fetch(
+    id: String,
+    url: String,
+    headers: String,
+    body: String,
+    handle: tauri::AppHandle,
+) -> String {
     //parse headers
     let headers_json: Value = match serde_json::from_str(&headers) {
         Ok(h) => h,
         Err(e) => return format!(r#"{{"success":false, body:{}}}"#, e.to_string()),
     };
     let app = handle.app_handle();
-    
+
     let mut headers = HeaderMap::new();
     if let Some(obj) = headers_json.as_object() {
         for (key, value) in obj {
@@ -409,13 +425,23 @@ async fn streamed_fetch(id:String, url:String, headers: String, body: String, ha
         .headers(headers)
         .timeout(Duration::from_secs(240))
         .body(body)
-        .send().await;
+        .send()
+        .await;
 
     match response {
         Ok(mut resp) => {
             let headers = resp.headers();
             let header_json = header_map_to_json(headers);
-            app.emit_all("streamed_fetch", &format!(r#"{{"type": "headers", "body": {}, "id": "{}", "status": {}}}"#, header_json, id, resp.status().as_u16())).unwrap();
+            app.emit_all(
+                "streamed_fetch",
+                &format!(
+                    r#"{{"type": "headers", "body": {}, "id": "{}", "status": {}}}"#,
+                    header_json,
+                    id,
+                    resp.status().as_u16()
+                ),
+            )
+            .unwrap();
             loop {
                 let byt = resp.chunk().await;
                 match byt {
@@ -425,31 +451,43 @@ async fn streamed_fetch(id:String, url:String, headers: String, body: String, ha
                         }
                         let chunk = chunk.unwrap();
                         let encoded = general_purpose::STANDARD.encode(chunk);
-                        let emited = app.emit_all("streamed_fetch", &format!(r#"{{"type": "chunk", "body": "{}", "id": "{}"}}"#, encoded, id));
+                        let emited = app.emit_all(
+                            "streamed_fetch",
+                            &format!(
+                                r#"{{"type": "chunk", "body": "{}", "id": "{}"}}"#,
+                                encoded, id
+                            ),
+                        );
 
                         match emited {
-                            Ok(_) => {},
+                            Ok(_) => {}
                             Err(e) => {
                                 return format!(r#"{{"success":false, body:{}}}"#, e.to_string())
                             }
                         }
                     }
-                    Err(e) => {
-                        return format!(r#"{{"success":false, body:{}}}"#, e.to_string())
-                    }
+                    Err(e) => return format!(r#"{{"success":false, body:{}}}"#, e.to_string()),
                 }
             }
-            app.emit_all("streamed_fetch", &format!(r#"{{"type": "end", "id": "{}"}}"#, id)).unwrap();
+            app.emit_all(
+                "streamed_fetch",
+                &format!(r#"{{"type": "end", "id": "{}"}}"#, id),
+            )
+            .unwrap();
             return "{\"success\":true}".to_string();
         }
-        Err(e) => {
-            return format!(r#"{{"success":false, body:{}}}"#, e.to_string())
-        }
+        Err(e) => return format!(r#"{{"success":false, body:{}}}"#, e.to_string()),
     }
 }
 
 fn main() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             native_request,
@@ -467,11 +505,13 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-
 fn header_map_to_json(header_map: &HeaderMap) -> serde_json::Value {
     let mut map = HashMap::new();
     for (key, value) in header_map {
-        map.insert(key.as_str().to_string(), value.to_str().unwrap().to_string());
+        map.insert(
+            key.as_str().to_string(),
+            value.to_str().unwrap().to_string(),
+        );
     }
     json!(map)
 }

@@ -74,7 +74,7 @@ export async function selectSingleFile(ext:string[]){
     } else if (selected === null) {
         return null
     } else {
-        return {name: await basename(selected),data:await readFile(selected)}
+        return {name: await basename(selected.path),data:await readFile(selected.path)}
     }
 }
 
@@ -98,7 +98,7 @@ export async function selectMultipleFile(ext:string[]){
     if (Array.isArray(selected)) {
         let arr:{name:string, data:Uint8Array}[] = []
         for(const file of selected){
-            arr.push({name: await basename(file),data:await readFile(file)})
+            arr.push({name: await basename(file.path),data:await readFile(file.path)})
         }
         return arr
     } else if (selected === null) {

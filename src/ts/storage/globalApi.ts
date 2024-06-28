@@ -1094,7 +1094,7 @@ async function pargeChunks(){
             if(unpargeable.includes(n)){
             }
             else{
-                await remove(asset.path)
+                await remove('assets/'+asset.name, {baseDir:BaseDirectory.AppData})
             }
         }
     }

@@ -326,8 +326,8 @@ fn run_py_server(handle: tauri::AppHandle, py_path: String) {
 }
 
 #[tauri::command]
-fn run_server_local() {
-    let app_base_path = tauri::api::path::data_dir()
+fn run_server_local(handle: tauri::AppHandle) {
+    let app_base_path = handle.path().data_dir()
         .unwrap()
         .join("co.aiclient.risu");
 

@@ -1,4 +1,4 @@
-import { writeBinaryFile,BaseDirectory, readFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
+import { writeFile,BaseDirectory, readFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { v4 as uuidv4, v4 } from 'uuid';
@@ -71,7 +71,7 @@ export async function downloadFile(name:string, dat:Uint8Array|ArrayBuffer|strin
     }
 
     if(isTauri){
-        await writeBinaryFile(name, data, {dir: BaseDirectory.Download})
+        await writeFile(name, data, {dir: BaseDirectory.Download})
     }
     else{
         downloadURL(`data:png/image;base64,${Buffer.from(data).toString('base64')}`, name)
@@ -233,7 +233,7 @@ export async function saveAsset(data:Uint8Array, customId:string = '', fileName:
         fileExtension = fileName.split('.').pop()
     }
     if(isTauri){
-        await writeBinaryFile(`assets/${id}.${fileExtension}`, data ,{dir: BaseDirectory.AppData})
+        await writeFile(`assets/${id}.${fileExtension}`, data ,{dir: BaseDirectory.AppData})
         return `assets/${id}.${fileExtension}`
     }
     else{
@@ -299,8 +299,8 @@ export async function saveDb(){
                 db.saveTime = Math.floor(Date.now() / 1000)
                 const dbData = encodeRisuSave(db)
                 if(isTauri){
-                    await writeBinaryFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
-                    await writeBinaryFile(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData, {dir: BaseDirectory.AppData})
+                    await writeFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
+                    await writeFile(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData, {dir: BaseDirectory.AppData})
                 }
                 else{
                     if(!forageStorage.isAccount){
@@ -393,7 +393,7 @@ export async function loadData() {
                     await createDir('assets', {dir: BaseDirectory.AppData})
                 }
                 if(!await exists('database/database.bin', {dir: BaseDirectory.AppData})){
-                    await writeBinaryFile('database/database.bin',
+                    await writeFile('database/database.bin',
                         encodeRisuSave({})
                     ,{dir: BaseDirectory.AppData})
                 }
@@ -1163,7 +1163,7 @@ export class TauriWriter{
     }
 
     async write(data:Uint8Array) {
-        await writeBinaryFile(this.path, data, {
+        await writeFile(this.path, data, {
             append: !this.firstWrite
         })
         this.firstWrite = false

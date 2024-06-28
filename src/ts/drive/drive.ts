@@ -2,7 +2,7 @@ import { get } from "svelte/store";
 import { alertError, alertErrorWait, alertInput, alertNormal, alertSelect, alertStore } from "../alert";
 import { DataBase, setDatabase, type Database } from "../storage/database";
 import { forageStorage, getUnpargeables, isNodeServer, isTauri, openURL } from "../storage/globalApi";
-import { BaseDirectory, exists, readFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, exists, readFile, readDir, writeFile } from "@tauri-apps/plugin-fs";
 import { language } from "../../lang";
 import { relaunch } from '@tauri-apps/plugin-process';
 import { isEqual } from "lodash";
@@ -405,7 +405,7 @@ async function loadDrive(ACCESS_TOKEN:string, mode: 'backup'|'sync'):Promise<voi
                                 if(file.name === formatedImage){
                                     const fData = await getFileData(ACCESS_TOKEN, file.id)
                                     if(isTauri){
-                                        await writeBinaryFile(`assets/` + images, fData ,{dir: BaseDirectory.AppData})
+                                        await writeFile(`assets/` + images, fData ,{dir: BaseDirectory.AppData})
         
                                     }
                                     else{
@@ -430,7 +430,7 @@ async function loadDrive(ACCESS_TOKEN:string, mode: 'backup'|'sync'):Promise<voi
         const dbData = encodeRisuSave(db, 'compression')
 
         if(isTauri){
-            await writeBinaryFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
+            await writeFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
             relaunch()
             alertStore.set({
                 type: "wait",

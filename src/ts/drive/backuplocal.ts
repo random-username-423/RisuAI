@@ -1,4 +1,4 @@
-import { BaseDirectory, readFile, readDir, writeBinaryFile } from "@tauri-apps/plugin-fs";
+import { BaseDirectory, readFile, readDir, writeFile } from "@tauri-apps/plugin-fs";
 import { alertError, alertNormal, alertStore, alertWait } from "../alert";
 import { LocalWriter, forageStorage, isTauri } from "../storage/globalApi";
 import { decodeRisuSave, encodeRisuSave } from "../storage/risuSave";
@@ -115,7 +115,7 @@ export async function LoadLocalBackup(){
                         const dbData = await decodeRisuSave(db)
                         DataBase.set(dbData)
                         if(isTauri){
-                            await writeBinaryFile('database/database.bin', db, {dir: BaseDirectory.AppData})
+                            await writeFile('database/database.bin', db, {dir: BaseDirectory.AppData})
                             relaunch()
                             alertStore.set({
                                 type: "wait",
@@ -133,7 +133,7 @@ export async function LoadLocalBackup(){
                         continue
                     }
                     if(isTauri){
-                        await writeBinaryFile(`assets/` + name, data ,{dir: BaseDirectory.AppData})
+                        await writeFile(`assets/` + name, data ,{dir: BaseDirectory.AppData})
                     }
                     else{
                         await forageStorage.setItem('assets/' + name, data)

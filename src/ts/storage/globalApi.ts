@@ -691,9 +691,16 @@ async function fetchWithTauri(url: string, arg: GlobalFetchArgs): Promise<Global
     return { ok: false, data: 'aborted', headers: {} };
   }
 
-  const data = arg.rawResponse ? new Uint8Array(result.data as number[]) : result.data;
+  let data: Uint8Array | string;
+  if (arg.rawResponse) {
+    const arrayBuffer = await result.arrayBuffer();
+    data = new Uint8Array(arrayBuffer);
+  } else {
+    data = await result.text();
+  }
+  
   addFetchLogInGlobalFetch(data, result.ok, url, arg);
-  return { ok: result.ok, data, headers: result.headers };
+  return { ok: result.ok, data, headers: Object.fromEntries(result.headers.entries()) };
 }
 
 // Decoupled globalFetch built-in function

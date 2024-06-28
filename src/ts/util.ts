@@ -6,7 +6,7 @@ import {open} from '@tauri-apps/plugin-dialog'
 import { readFile } from "@tauri-apps/plugin-fs"
 import { basename } from "@tauri-apps/api/path"
 import { createBlankChar, getCharImage } from "./characters"
-import { appWindow } from 'webviewWindow';
+import { appWindow } from '@tauri-apps/api/webviewWindow';
 import { isTauri } from "./storage/globalApi"
 import { Marked } from "marked"
 

@@ -141,7 +141,7 @@ export async function syncDrive() {
                     return d.name
                 })
                 if(isTauri){
-                    const assets = await readDir('assets', {dir: BaseDirectory.AppData})
+                    const assets = await readDir('assets', {baseDir: BaseDirectory.AppData})
                     let i = 0;
                     for(let asset of assets){
                         i += 1;
@@ -221,7 +221,7 @@ async function backupDrive(ACCESS_TOKEN:string) {
     })
 
     if(isTauri){
-        const assets = await readDir('assets', {dir: BaseDirectory.AppData})
+        const assets = await readDir('assets', {baseDir: BaseDirectory.AppData})
         let i = 0;
         for(let asset of assets){
             i += 1;
@@ -294,7 +294,7 @@ async function loadDrive(ACCESS_TOKEN:string, mode: 'backup'|'sync'):Promise<voi
             return false
         }
         if(isTauri){
-            return await exists(`assets/` + images, {dir: BaseDirectory.AppData})
+            return await exists(`assets/` + images, {baseDir: BaseDirectory.AppData})
         }
         else{
             if(!loadedForageKeys){
@@ -405,7 +405,7 @@ async function loadDrive(ACCESS_TOKEN:string, mode: 'backup'|'sync'):Promise<voi
                                 if(file.name === formatedImage){
                                     const fData = await getFileData(ACCESS_TOKEN, file.id)
                                     if(isTauri){
-                                        await writeFile(`assets/` + images, fData ,{dir: BaseDirectory.AppData})
+                                        await writeFile(`assets/` + images, fData ,{baseDir: BaseDirectory.AppData})
         
                                     }
                                     else{
@@ -430,7 +430,7 @@ async function loadDrive(ACCESS_TOKEN:string, mode: 'backup'|'sync'):Promise<voi
         const dbData = encodeRisuSave(db, 'compression')
 
         if(isTauri){
-            await writeFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
+            await writeFile('database/database.bin', dbData, {baseDir: BaseDirectory.AppData})
             relaunch()
             alertStore.set({
                 type: "wait",

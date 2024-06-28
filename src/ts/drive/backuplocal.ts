@@ -41,7 +41,7 @@ export async function SaveLocalBackup(){
     
 
     if(isTauri){
-        const assets = await readDir('assets', {dir: BaseDirectory.AppData})
+        const assets = await readDir('assets', {baseDir: BaseDirectory.AppData})
         let i = 0;
         for(let asset of assets){
             i += 1;
@@ -115,7 +115,7 @@ export async function LoadLocalBackup(){
                         const dbData = await decodeRisuSave(db)
                         DataBase.set(dbData)
                         if(isTauri){
-                            await writeFile('database/database.bin', db, {dir: BaseDirectory.AppData})
+                            await writeFile('database/database.bin', db, {baseDir: BaseDirectory.AppData})
                             relaunch()
                             alertStore.set({
                                 type: "wait",
@@ -133,7 +133,7 @@ export async function LoadLocalBackup(){
                         continue
                     }
                     if(isTauri){
-                        await writeFile(`assets/` + name, data ,{dir: BaseDirectory.AppData})
+                        await writeFile(`assets/` + name, data ,{baseDir: BaseDirectory.AppData})
                     }
                     else{
                         await forageStorage.setItem('assets/' + name, data)

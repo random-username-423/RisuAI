@@ -9,7 +9,7 @@ import { DataBase, loadedStore, setDatabase, type Database, defaultSdDataFunc } 
 import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import { checkRisuUpdate } from "../update";
 import { botMakerMode, selectedCharID } from "../stores";
-import { Body, ResponseType, fetch as TauriFetch } from "@tauri-apps/plugin-http";
+import { fetch as TauriFetch } from "@tauri-apps/plugin-http";
 import { loadPlugins } from "../plugins/plugins";
 import { alertConfirm, alertError, alertNormal, alertNormalWait } from "../alert";
 import { checkDriverInit, syncDrive } from "../drive/drive";
@@ -668,7 +668,7 @@ async function fetchWithPlainFetch(url: string, arg: GlobalFetchArgs): Promise<G
 
 // Decoupled globalFetch built-in function
 async function fetchWithTauri(url: string, arg: GlobalFetchArgs): Promise<GlobalFetchResult> {
-  const body = !arg.body ? null : arg.body instanceof URLSearchParams ? Body.text(arg.body.toString()) : Body.json(arg.body);
+  const body = !arg.body ? null : arg.body instanceof URLSearchParams ? arg.body.toString() : arg.body;
   const headers = arg.headers ?? {};
 
   

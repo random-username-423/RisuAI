@@ -6,7 +6,7 @@ import { appDataDir, join } from "@tauri-apps/api/path";
 import { get } from "svelte/store";
 import {open} from '@tauri-apps/plugin-shell'
 import { DataBase, loadedStore, setDatabase, type Database, defaultSdDataFunc } from "./database";
-import { appWindow } from "@tauri-apps/api/webviewWindow";
+import { getCurrent } from "@tauri-apps/api/webviewWindow";
 import { checkRisuUpdate } from "../update";
 import { botMakerMode, selectedCharID } from "../stores";
 import { Body, ResponseType, fetch as TauriFetch } from "@tauri-apps/plugin-http";
@@ -382,7 +382,7 @@ export async function loadData() {
     if(!loaded){
         try {
             if(isTauri){
-                appWindow.maximize()
+                getCurrent().maximize()
                 if(!await exists('', {dir: BaseDirectory.AppData})){
                     await mkdir('', {dir: BaseDirectory.AppData})
                 }

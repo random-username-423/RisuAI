@@ -6,7 +6,7 @@ import {open} from '@tauri-apps/plugin-dialog'
 import { readFile } from "@tauri-apps/plugin-fs"
 import { basename } from "@tauri-apps/api/path"
 import { createBlankChar, getCharImage } from "./characters"
-import { appWindow } from '@tauri-apps/api/webviewWindow';
+import { getCurrent } from '@tauri-apps/api/webviewWindow';
 import { isTauri } from "./storage/globalApi"
 import { Marked } from "marked"
 
@@ -177,12 +177,12 @@ function readFileAsUint8Array(file) {
 
 export async function changeFullscreen(){
     const db = get(DataBase)
-    const isFull = await appWindow.isFullscreen()
+    const isFull = await getCurrent().isFullscreen()
     if(db.fullScreen && (!isFull)){
-        await appWindow.setFullscreen(true)
+        await getCurrent().setFullscreen(true)
     }
     if((!db.fullScreen) && (isFull)){
-        await appWindow.setFullscreen(false)
+        await getCurrent().setFullscreen(false)
     }
 }
 

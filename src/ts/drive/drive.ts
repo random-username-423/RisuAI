@@ -157,7 +157,7 @@ export async function syncDrive() {
                         }
                         const formatedKey = formatKeys(key)
                         if(!fileNames.includes(formatedKey)){
-                            await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile(asset.path))
+                            await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile("assets/"+asset.name,{baseDir: BaseDirectory.AppData}))
                         }
                     }
                 }
@@ -235,7 +235,7 @@ async function backupDrive(ACCESS_TOKEN:string) {
             }
             const formatedKey = newFormatKeys(key)
             if(!fileNames.includes(formatedKey)){
-                await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile(asset.path))
+                await createFileInFolder(ACCESS_TOKEN, formatedKey, await readFile("assets/"+asset.name,{baseDir: BaseDirectory.AppData}));
             }
         }
     }

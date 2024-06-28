@@ -670,12 +670,15 @@ async function fetchWithPlainFetch(url: string, arg: GlobalFetchArgs): Promise<G
 async function fetchWithTauri(url: string, arg: GlobalFetchArgs): Promise<GlobalFetchResult> {
   const body = !arg.body ? null : arg.body instanceof URLSearchParams ? Body.text(arg.body.toString()) : Body.json(arg.body);
   const headers = arg.headers ?? {};
+
+  
+
   const fetchPromise = TauriFetch(url, {
     body,
     method: arg.method ?? 'POST',
     headers,
-    timeout: { secs: get(DataBase).timeOut, nanos: 0 },
-    responseType: arg.rawResponse ? ResponseType.Binary : ResponseType.JSON,
+   // timeout: { secs: get(DataBase).timeOut, nanos: 0 },
+    //responseType: arg.rawResponse ? ResponseType.Binary : ResponseType.JSON,
   });
 
   let abortFn = () => {};

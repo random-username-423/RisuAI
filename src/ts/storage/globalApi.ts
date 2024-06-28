@@ -71,7 +71,7 @@ export async function downloadFile(name:string, dat:Uint8Array|ArrayBuffer|strin
     }
 
     if(isTauri){
-        await writeFile(name, data, {dir: BaseDirectory.Download})
+        await writeFile(name, data, {baseDir: BaseDirectory.Download})
     }
     else{
         downloadURL(`data:png/image;base64,${Buffer.from(data).toString('base64')}`, name)
@@ -233,7 +233,7 @@ export async function saveAsset(data:Uint8Array, customId:string = '', fileName:
         fileExtension = fileName.split('.').pop()
     }
     if(isTauri){
-        await writeFile(`assets/${id}.${fileExtension}`, data ,{dir: BaseDirectory.AppData})
+        await writeFile(`assets/${id}.${fileExtension}`, data ,{baseDir: BaseDirectory.AppData})
         return `assets/${id}.${fileExtension}`
     }
     else{
@@ -248,7 +248,7 @@ export async function saveAsset(data:Uint8Array, customId:string = '', fileName:
 
 export async function loadAsset(id:string){
     if(isTauri){
-        return await readFile(id,{dir: BaseDirectory.AppData})
+        return await readFile(id,{baseDir: BaseDirectory.AppData})
     }
     else{
         return await forageStorage.getItem(id) as Uint8Array
@@ -299,8 +299,8 @@ export async function saveDb(){
                 db.saveTime = Math.floor(Date.now() / 1000)
                 const dbData = encodeRisuSave(db)
                 if(isTauri){
-                    await writeFile('database/database.bin', dbData, {dir: BaseDirectory.AppData})
-                    await writeFile(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData, {dir: BaseDirectory.AppData})
+                    await writeFile('database/database.bin', dbData, {baseDir: BaseDirectory.AppData})
+                    await writeFile(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData, {baseDir: BaseDirectory.AppData})
                 }
                 else{
                     if(!forageStorage.isAccount){
@@ -341,7 +341,7 @@ async function getDbBackups() {
         return
     }
     if(isTauri){
-        const keys = await readDir('database', {dir: BaseDirectory.AppData})
+        const keys = await readDir('database', {baseDir: BaseDirectory.AppData})
         let backups:number[] = []
         for(const key of keys){
             if(key.name.startsWith("dbbackup-")){
@@ -353,7 +353,7 @@ async function getDbBackups() {
         backups.sort((a, b) => b - a)
         while(backups.length > 20){
             const last = backups.pop()
-            await remove(`database/dbbackup-${last}.bin`,{dir: BaseDirectory.AppData})
+            await remove(`database/dbbackup-${last}.bin`,{baseDir: BaseDirectory.AppData})
         }
         return backups
     }
@@ -383,30 +383,30 @@ export async function loadData() {
         try {
             if(isTauri){
                 getCurrent().maximize()
-                if(!await exists('', {dir: BaseDirectory.AppData})){
-                    await mkdir('', {dir: BaseDirectory.AppData})
+                if(!await exists('', {baseDir: BaseDirectory.AppData})){
+                    await mkdir('', {baseDir: BaseDirectory.AppData})
                 }
-                if(!await exists('database', {dir: BaseDirectory.AppData})){
-                    await mkdir('database', {dir: BaseDirectory.AppData})
+                if(!await exists('database', {baseDir: BaseDirectory.AppData})){
+                    await mkdir('database', {baseDir: BaseDirectory.AppData})
                 }
-                if(!await exists('assets', {dir: BaseDirectory.AppData})){
-                    await mkdir('assets', {dir: BaseDirectory.AppData})
+                if(!await exists('assets', {baseDir: BaseDirectory.AppData})){
+                    await mkdir('assets', {baseDir: BaseDirectory.AppData})
                 }
-                if(!await exists('database/database.bin', {dir: BaseDirectory.AppData})){
+                if(!await exists('database/database.bin', {baseDir: BaseDirectory.AppData})){
                     await writeFile('database/database.bin',
                         encodeRisuSave({})
-                    ,{dir: BaseDirectory.AppData})
+                    ,{baseDir: BaseDirectory.AppData})
                 }
                 try {
                     setDatabase(
-                        decodeRisuSave(await readFile('database/database.bin',{dir: BaseDirectory.AppData}))
+                        decodeRisuSave(await readFile('database/database.bin',{baseDir: BaseDirectory.AppData}))
                     )
                 } catch (error) {
                     const backups = await getDbBackups()
                     let backupLoaded = false
                     for(const backup of backups){
                         try {
-                            const backupData = await readFile(`database/dbbackup-${backup}.bin`,{dir: BaseDirectory.AppData})
+                            const backupData = await readFile(`database/dbbackup-${backup}.bin`,{baseDir: BaseDirectory.AppData})
                             setDatabase(
                                 decodeRisuSave(backupData)
                             )
@@ -1088,7 +1088,7 @@ async function pargeChunks(){
 
     const unpargeable = getUnpargeables(db)
     if(isTauri){
-        const assets = await readDir('assets', {dir: BaseDirectory.AppData})
+        const assets = await readDir('assets', {baseDir: BaseDirectory.AppData})
         for(const asset of assets){
             const n = getBasename(asset.name)
             if(unpargeable.includes(n)){

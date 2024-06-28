@@ -1,4 +1,4 @@
-import { writeFile,BaseDirectory, readFile, exists, mkdir, readDir, removeFile } from "@tauri-apps/plugin-fs"
+import { writeFile,BaseDirectory, readFile, exists, mkdir, readDir, remove } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { v4 as uuidv4, v4 } from 'uuid';
@@ -353,7 +353,7 @@ async function getDbBackups() {
         backups.sort((a, b) => b - a)
         while(backups.length > 20){
             const last = backups.pop()
-            await removeFile(`database/dbbackup-${last}.bin`,{dir: BaseDirectory.AppData})
+            await remove(`database/dbbackup-${last}.bin`,{dir: BaseDirectory.AppData})
         }
         return backups
     }
@@ -1084,7 +1084,7 @@ async function pargeChunks(){
             if(unpargeable.includes(n)){
             }
             else{
-                await removeFile(asset.path)
+                await remove(asset.path)
             }
         }
     }

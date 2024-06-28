@@ -1,4 +1,4 @@
-import { writeFile,BaseDirectory, readFile, exists, createDir, readDir, removeFile } from "@tauri-apps/plugin-fs"
+import { writeFile,BaseDirectory, readFile, exists, mkdir, readDir, removeFile } from "@tauri-apps/plugin-fs"
 import { changeFullscreen, checkNullish, findCharacterbyId, sleep } from "../util"
 import { convertFileSrc, invoke } from "@tauri-apps/api/core"
 import { v4 as uuidv4, v4 } from 'uuid';
@@ -384,13 +384,13 @@ export async function loadData() {
             if(isTauri){
                 appWindow.maximize()
                 if(!await exists('', {dir: BaseDirectory.AppData})){
-                    await createDir('', {dir: BaseDirectory.AppData})
+                    await mkdir('', {dir: BaseDirectory.AppData})
                 }
                 if(!await exists('database', {dir: BaseDirectory.AppData})){
-                    await createDir('database', {dir: BaseDirectory.AppData})
+                    await mkdir('database', {dir: BaseDirectory.AppData})
                 }
                 if(!await exists('assets', {dir: BaseDirectory.AppData})){
-                    await createDir('assets', {dir: BaseDirectory.AppData})
+                    await mkdir('assets', {dir: BaseDirectory.AppData})
                 }
                 if(!await exists('database/database.bin', {dir: BaseDirectory.AppData})){
                     await writeFile('database/database.bin',

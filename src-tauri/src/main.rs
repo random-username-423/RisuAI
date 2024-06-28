@@ -14,6 +14,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::{path::Path, time::Duration};
 use tauri::Manager;
+use tauri::{path::BaseDirectory};
 
 #[tauri::command]
 async fn native_request(url: String, body: String, header: String, method: String) -> String {
@@ -302,8 +303,8 @@ fn install_py_dependencies(path: String, dependency: String) -> Result<(), Strin
 fn run_py_server(handle: tauri::AppHandle, py_path: String) {
     let py_exec_path = Path::new(&py_path).join("python").join("python.exe");
     let server_path = handle
-        .path_resolver()
-        .resolve_resource("src-python/run.py")
+        .path()
+        .resolve("src-python/run.py", BaseDirectory::Resource)
         .expect("failed to resolve resource");
 
     let mut py_server = Command::new(&py_exec_path);

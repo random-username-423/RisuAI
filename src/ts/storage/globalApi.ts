@@ -36,7 +36,7 @@ import { encodeCapKeySafe } from "./mobileStorage";
 import { updateLorebooks } from "../characters";
 
 //@ts-ignore
-export const isTauri = !!window.__TAURI__
+export const isTauri = !!window.isTauri
 //@ts-ignore
 export const isNodeServer = !!globalThis.__NODE__
 export const forageStorage = new AutoStorage()

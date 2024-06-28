@@ -433,7 +433,7 @@ async fn streamed_fetch(
         Ok(mut resp) => {
             let headers = resp.headers();
             let header_json = header_map_to_json(headers);
-            app.emit_all(
+            app.emit(
                 "streamed_fetch",
                 &format!(
                     r#"{{"type": "headers", "body": {}, "id": "{}", "status": {}}}"#,
@@ -452,7 +452,7 @@ async fn streamed_fetch(
                         }
                         let chunk = chunk.unwrap();
                         let encoded = general_purpose::STANDARD.encode(chunk);
-                        let emited = app.emit_all(
+                        let emited = app.emit(
                             "streamed_fetch",
                             &format!(
                                 r#"{{"type": "chunk", "body": "{}", "id": "{}"}}"#,
@@ -470,7 +470,7 @@ async fn streamed_fetch(
                     Err(e) => return format!(r#"{{"success":false, body:{}}}"#, e.to_string()),
                 }
             }
-            app.emit_all(
+            app.emit(
                 "streamed_fetch",
                 &format!(r#"{{"type": "end", "id": "{}"}}"#, id),
             )

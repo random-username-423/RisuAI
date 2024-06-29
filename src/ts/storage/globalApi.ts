@@ -672,10 +672,8 @@ async function fetchWithTauri(url: string, arg: GlobalFetchArgs): Promise<Global
   const body = !arg.body ? null : arg.body instanceof URLSearchParams ? arg.body.toString() : arg.body;
   const headers = arg.headers ?? {};
 
-  
-
   const fetchPromise = TauriFetch(url, {
-    body,
+    body:JSON.stringify(body),
     method: arg.method ?? 'POST',
     headers,
    // timeout: { secs: get(DataBase).timeOut, nanos: 0 },
@@ -700,7 +698,7 @@ async function fetchWithTauri(url: string, arg: GlobalFetchArgs): Promise<Global
     const arrayBuffer = await result.arrayBuffer();
     data = new Uint8Array(arrayBuffer);
   } else {
-    data = await result.text();
+    data = await result.json();
   }
   
   addFetchLogInGlobalFetch(data, result.ok, url, arg);

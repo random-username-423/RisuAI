@@ -25,6 +25,11 @@
     {
       "identifier": "fs:scope",
       "allow": [
+        "assets",
+        "assets/*",
+        "assets/**/*",
+        "/assets/*",
+        "/assets/**/*",
         "$APPDATA",
         "$APPDATA/*",
         "$APPDATA/**/*",

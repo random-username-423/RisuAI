@@ -7,14 +7,16 @@ fn greet(name: &str) -> String {
 }
 
 use base64::{engine::general_purpose, Engine as _};
+use flate2::write::DeflateEncoder;
+use flate2::Compression;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use serde_json::json;
 use serde_json::Value;
 use std::collections::HashMap;
 use std::io::Write;
 use std::{path::Path, time::Duration};
+use tauri::path::BaseDirectory;
 use tauri::Manager;
-use tauri::{path::BaseDirectory};
 
 #[tauri::command]
 async fn native_request(url: String, body: String, header: String, method: String) -> String {
@@ -327,9 +329,7 @@ fn run_py_server(handle: tauri::AppHandle, py_path: String) {
 
 #[tauri::command]
 fn run_server_local(handle: tauri::AppHandle) {
-    let app_base_path = handle.path().data_dir()
-        .unwrap()
-        .join("co.aiclient.risu");
+    let app_base_path = handle.path().data_dir().unwrap().join("co.aiclient.risu");
 
     //check app base path exists
     if !app_base_path.exists() {
@@ -481,6 +481,51 @@ async fn streamed_fetch(
     }
 }
 
+use std::time::{Instant, SystemTime, UNIX_EPOCH};
+
+#[tauri::command]
+fn gzip_compress(request: tauri::ipc::Request<'_>) -> tauri::Result<tauri::ipc::Response> {
+    let start_time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_secs();
+    println!(
+        "Received a request for compression at Unix time: {}.",
+        start_time
+    );
+
+    if let tauri::ipc::InvokeBody::Raw(data) = request.body() {
+        println!("Request body is raw data.");
+
+        let start = Instant::now();
+
+        let mut e = DeflateEncoder::new(Vec::new(), Compression::default());
+        println!("Initialized DeflateEncoder.");
+
+        // Handle error for write_all
+        if let Err(err) = e.write_all(data) {
+            println!("Failed to write data to encoder: {:?}", err);
+            return Err(tauri::Error::from(err));
+        }
+
+        println!("Writing to the encoder succeeded.");
+
+        match e.finish() {
+            Ok(compressed_bytes) => {
+                let duration = start.elapsed();
+                println!(
+                    "Compression succeeded. Time taken: {:?} microseconds",
+                    duration.as_micros()
+                );
+                Ok(tauri::ipc::Response::new(compressed_bytes))
+            }
+            Err(err) => Err(tauri::Error::from(err)),
+        }
+    } else {
+        todo!()
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -500,7 +545,8 @@ fn main() {
             post_py_install,
             run_py_server,
             install_py_dependencies,
-            streamed_fetch
+            streamed_fetch,
+            gzip_compress
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -20,7 +20,7 @@
     "targets": "all"
   },
   "productName": "RisuAI",
-  "version": "116.0.1",
+  "version": "117.0.0",
   "identifier": "co.aiclient.risu",
   "plugins": {
     "updater": {

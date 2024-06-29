@@ -205,7 +205,7 @@ importers:
         specifier: ^5.6.0
         version: 5.6.0
       '@sveltejs/vite-plugin-svelte':
-        specifier: ^3.0.1
+        specifier: 3.0.1
         version: 3.0.1(svelte@4.2.8)(vite@5.2.12(@types/node@18.19.7))
       '@swc/core':
         specifier: ^1.5.7

@@ -82,7 +82,7 @@ export class AutoStorage{
             }
 
             const dba = replaceDbResources(db, replaced)
-            const comp = encodeRisuSave(dba, 'compression')
+            const comp = await encodeRisuSave(dba, 'compression')
             //try decoding
             try {
                 const z:Database = decodeRisuSave(comp)

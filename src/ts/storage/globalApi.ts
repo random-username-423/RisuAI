@@ -297,7 +297,8 @@ export async function saveDb(){
                 changed = false
                 let db = get(DataBase)
                 db.saveTime = Math.floor(Date.now() / 1000)
-                const dbData = encodeRisuSave(db)
+
+                const dbData = await encodeRisuSave(db)
                 if(isTauri){
                     await writeFile('database/database.bin', dbData, {baseDir: BaseDirectory.AppData})
                     await writeFile(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData, {baseDir: BaseDirectory.AppData})
@@ -308,7 +309,7 @@ export async function saveDb(){
                         await forageStorage.setItem(`database/dbbackup-${(Date.now()/100).toFixed()}.bin`, dbData)
                     }
                     if(forageStorage.isAccount){
-                        const dbData = encodeRisuSave(db, 'compression')
+                        const dbData = await encodeRisuSave(db, 'compression')
                         const z:Database = decodeRisuSave(dbData)
                         if(z.formatversion){
                             await forageStorage.setItem('database/database.bin', dbData)
@@ -394,7 +395,7 @@ export async function loadData() {
                 }
                 if(!await exists('database/database.bin', {baseDir: BaseDirectory.AppData})){
                     await writeFile('database/database.bin',
-                        encodeRisuSave({})
+                        await encodeRisuSave({})
                     ,{baseDir: BaseDirectory.AppData})
                 }
                 try {
@@ -426,7 +427,7 @@ export async function loadData() {
             else{
                 let gotStorage:Uint8Array = await forageStorage.getItem('database/database.bin')
                 if(checkNullish(gotStorage)){
-                    gotStorage = encodeRisuSave({})
+                    gotStorage = await encodeRisuSave({})
                     await forageStorage.setItem('database/database.bin', gotStorage)
                 }
                 try {
@@ -452,7 +453,7 @@ export async function loadData() {
                 if(await forageStorage.checkAccountSync()){
                     let gotStorage:Uint8Array = await forageStorage.getItem('database/database.bin')
                     if(checkNullish(gotStorage)){
-                        gotStorage = encodeRisuSave({})
+                        gotStorage = await encodeRisuSave({})
                         await forageStorage.setItem('database/database.bin', gotStorage)
                     }
                     try {

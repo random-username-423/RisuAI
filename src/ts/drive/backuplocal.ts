@@ -70,7 +70,7 @@ export async function SaveLocalBackup(){
         }
     }
 
-    const dbData = encodeRisuSave(get(DataBase), 'compression')
+    const dbData = await encodeRisuSave(get(DataBase), 'compression')
 
     alertWait(`Saving local Backup... (Saving database)`)
 

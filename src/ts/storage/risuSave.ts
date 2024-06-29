@@ -1,6 +1,18 @@
 import { Packr, Unpackr, decode } from "msgpackr";
 import * as fflate from "fflate";
 import { isTauri } from "./globalApi";
+//import { invoke } from "@tauri-apps/api/core"
+
+const promisify = <T>(func: (...args: any[]) => void) => { // Use generics to specify the return type
+    return (...args: any[]) => {
+      return new Promise<T>((resolve, reject) => {
+        func(...args, (err: any, res: T) => err ? reject(err) : resolve(res));
+      });
+    }
+  }
+
+// Specify the type explicitly
+const deflate = promisify<Uint8Array>(fflate.compress);
 
 const packr = new Packr({
     useRecords:false
@@ -14,13 +26,13 @@ const unpackr = new Unpackr({
 const magicHeader = new Uint8Array([0, 82, 73, 83, 85, 83, 65, 86, 69, 0, 7]); 
 const magicCompressedHeader = new Uint8Array([0, 82, 73, 83, 85, 83, 65, 86, 69, 0, 8]); 
 
-export function encodeRisuSave(data:any, compression:'noCompression'|'compression' = 'noCompression'){
+export async function encodeRisuSave(data:any, compression:'noCompression'|'compression' = 'noCompression'){
     let encoded:Uint8Array = packr.encode(data)
     if(isTauri || compression === 'compression'){
-        encoded = fflate.compressSync(encoded)
-        const result = new Uint8Array(encoded.length + magicCompressedHeader.length);
+        const compressed: Uint8Array = await deflate(encoded);
+        const result = new Uint8Array(compressed.length + magicCompressedHeader.length);
         result.set(magicCompressedHeader, 0)
-        result.set(encoded, magicCompressedHeader.length)
+        result.set(compressed, magicCompressedHeader.length)
         return result
     }
     else{
